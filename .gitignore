@@ -1,0 +1,9 @@
+# ignore object files
+*.o
+
+# ignore json and ppm files
+*.json
+*.ppm
+
+# ignore vscode folder
+/.vscode
