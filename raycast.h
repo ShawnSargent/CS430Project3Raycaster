@@ -6,11 +6,38 @@
 #include "v3math.h"
 #include "PPMConverterMain.h"
 
-
 // Object Data Structure
+struct vector3dType{
+    float x;
+    float y;
+    float z;
+} vector3d;
 
+typedef enum objectName{Sphere, Plane};
+
+struct objectType{ 
+    objectName objectId;
+    vector3dType color;
+    vector3dType position;
+    vector3dType normal;
+    int radius;
+} object;
+
+struct objectListType{
+    objectType currObject;
+    objectListType* nextObject;
+} objectList;
+
+struct cameraType{
+    vector3dType postion;
+    float height;
+    float width;
+}camera;
 
 // Function Prototypes
+objectListType parseJsonFile(FILE inputFile);
+
+
 
 
 #endif // RAYCAST_H
