@@ -9,7 +9,7 @@ CFILES   = $(wildcard *.c)
 OBJFILES = $(CFILES:.c=.o)
 
 # executable file name
-EXECFILE = v3test
+EXECFILE = raycast
 
 # compile to executable by default 
 all : $(EXECFILE)
