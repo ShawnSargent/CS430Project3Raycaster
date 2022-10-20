@@ -13,26 +13,24 @@ typedef struct vector3dType{
     float z;
 } vector3d;
 
-//typedef enum objectName{Sphere, Plane};
-
-struct objectType{ 
-    objectName objectId = Sphere;
-    vector3dType color;
-    vector3dType position;
-    vector3dType normal;
+typedef struct objectType{ 
+    enum objectTypes {Sphere, Plane} objectId;
+    vector3d color;
+    vector3d position;
+    vector3d normal;
     int radius;
-    objectType* nextObject;
-} object;
+    object* nextObject;
+}object;
 
 
 typedef struct cameraType{
-    vector3dType postion;
+    vector3d postion;
     float height;
     float width;
 }camera;
 
 // Function Prototypes
-objectType* parseJsonFile(FILE inputFile);
+object* parseJsonFile(char* inFileName, camera* Camera);
 
 
 
