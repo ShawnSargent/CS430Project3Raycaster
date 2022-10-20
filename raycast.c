@@ -44,6 +44,12 @@ int main( int argc, char **argv )
 		// (RGBA) has 4 channels
 		int channels = 4;
 
+	// Define Variables pertaining to objects and cameras
+
+		// Define a variable that represents a temporary place to store the inputted pixmap
+		// Also, allocate memory equal to the inputted values for width, height, and channels
+		uint8_t *pixMap = NULL;
+
 	// Copy the name of the input file to the local copy of the file name 
 	strcpy( inFileName, argv[3] );
 
@@ -79,7 +85,7 @@ int main( int argc, char **argv )
 
 		printf( "Raycast Operation Successful !\n" );
 
-		printf( "Object transferred to pixel buffer successfully. !\n" )
+		printf( "Object transferred to pixel buffer successfully. !\n" );
 
 	}
 
@@ -94,19 +100,30 @@ object* parseInputJSON( char* inFileName, camera* camera)
 {
     // read input file
     FILE* fileHandle;
+
     fileHandle = fopen(inFileName, "r");
+
     int charLimit = 128;
+
     char* inLine[charLimit]; // 128 is max character limit arbitrarily defined
 
     // making head pointer for object linked list
     object* head = (object*) malloc(sizeof(object));
+
     fgets(inLine, charLimit, fileHandle);
+
     //Line format: camera, width: [num], hieght: [num]
     fscanf(fileHandle, "%s %s %d %c %s %d");
+
     // grab and assign the camera data
 
     // grab objects until we are at the end of file
     // return head pointer to object list
 }
 
+// Function: raycastToPixMap
+// Purpose: Take the inverted objects and put them on a pix map
+uint8_t raycastToPixmap()
+{
 
+}
