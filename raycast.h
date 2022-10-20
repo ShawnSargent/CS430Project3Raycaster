@@ -21,12 +21,9 @@ struct objectType{
     vector3dType position;
     vector3dType normal;
     int radius;
+    objectType* nextObject;
 } object;
 
-struct objectListType{
-    objectType currObject;
-    objectListType* nextObject;
-} objectList;
 
 struct cameraType{
     vector3dType postion;
@@ -35,7 +32,7 @@ struct cameraType{
 }camera;
 
 // Function Prototypes
-objectListType parseJsonFile(FILE inputFile);
+objectType* parseJsonFile(FILE inputFile);
 
 
 
