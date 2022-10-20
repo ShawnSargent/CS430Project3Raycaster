@@ -108,7 +108,7 @@ object* parseJsonFile( char* inFileName, camera* camera)
         return NULL;
     }
 
-    int charLimit = 128; // 128 is max character limit arbitrarily defined
+    int charLimit = 128; // 128 is max character limit arbitrarily defined 
 
     char inLine[charLimit]; 
     char temp[charLimit];
@@ -159,5 +159,5 @@ object* parseJsonFile( char* inFileName, camera* camera)
 // Purpose: Take the inverted objects and put them on a pix map
 uint8_t raycastToPixmap()
 {
-
+    // this will return a pixmap
 }
