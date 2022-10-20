@@ -7,13 +7,13 @@
 #include "PPMConverterMain.h"
 
 // Object Data Structure
-struct vector3dType{
+typedef struct vector3dType{
     float x;
     float y;
     float z;
 } vector3d;
 
-typedef enum objectName{Sphere, Plane};
+//typedef enum objectName{Sphere, Plane};
 
 struct objectType{ 
     objectName objectId = Sphere;
@@ -25,7 +25,7 @@ struct objectType{
 } object;
 
 
-struct cameraType{
+typedef struct cameraType{
     vector3dType postion;
     float height;
     float width;
