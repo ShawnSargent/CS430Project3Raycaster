@@ -21,7 +21,6 @@ int main( int argc, char **argv )
 	// Define Variables pertaining to input file
 
 		// File type object to represent the input file 
-		FILE *inputJSON;
 
 		// Define a size that will be used to store the name of the input file
 		const int fileNameSize = 50;
@@ -35,10 +34,12 @@ int main( int argc, char **argv )
 	// Define Variables pertaining to height and width, channels, and pixmap
 	
 		// Variable representing width at the 1st index inputted from the CLI
-		int width = argv[1];
+		int width;
+        sscanf(argv[1], "%d", &width);
 
 		// Variable representing height at the 2nd index inputted from the CLI
-		int height = argv[2];
+		int height;
+        sscanf(argv[2], "%d", &height);
 
 		// Define a variable to store the color channels of the input image 
 		// (RGBA) has 4 channels
@@ -50,45 +51,41 @@ int main( int argc, char **argv )
 		// Also, allocate memory equal to the inputted values for width, height, and channels
 		uint8_t *pixMap = NULL;
 
+        // camera is going to be at 0,0,0
+
+        camera theCamera;
+        theCamera.postion.x = 0;
+        theCamera.postion.y = 0;
+        theCamera.postion.z = 0;
+
+        // object linked list
+        object* headPtr;
+
 	// Copy the name of the input file to the local copy of the file name 
 	strcpy( inFileName, argv[3] );
 
 	// Copy the name of the output file 
 	strcpy( outFileName, argv[4] );
 
-	// Open the file input file
-	inputJSON = fopen( inFileName, "r" );
-
 	// CHECK to see if the input file open was a success
-	if ( inputJSON == NULL )
-	{
-		// First, close the file 
-		fclose( inputJSON );
 
-		// Print Error message to stderr
-		fprintf( stderr, "Error: Could not open Input file.\n");
+    headPtr = parseJsonFile( inFileName, &theCamera);
 
-		fprintf( stderr, "Make sure the input file name is correct.\n");
+    if(headPtr == NULL){
+        fprintf(stderr, "Empty Scene, no objects found\n");
+        fprintf(stderr, "Ending Program");
+        return -1;
+    }
 
-		fprintf( stderr, "Program End\n\n" );
+    raycastToPixmap();
 
-		// Return unsuccessful operation
-		return -1;	
-	}
-	else
-	{
-		parseInputJSON( inputJSON );
+    //writeP6Data(inFileName, ... );
 
-		raycastToPixmap();
+    printf( "Raycast Operation Successful !\n" );
 
-		writeP6Data(inFileName, ... );
+    printf( "Object transferred to pixel buffer successfully. !\n" );
 
-		printf( "Raycast Operation Successful !\n" );
-
-		printf( "Object transferred to pixel buffer successfully. !\n" );
-
-	}
-
+    // free anything necessary
 	return 0;
 
 }
@@ -96,29 +93,66 @@ int main( int argc, char **argv )
 
 // Function: parseInputJSON()
 // Purpose: imports .json file, which is file 
-object* parseInputJSON( char* inFileName, camera* camera)
+object* parseJsonFile( char* inFileName, camera* camera)
 {
     // read input file
     FILE* fileHandle;
 
     fileHandle = fopen(inFileName, "r");
+    
+    if(fileHandle == NULL){
+        fclose(fileHandle);
 
-    int charLimit = 128;
+        fprintf(stderr, "ERROR: File could not be opened\n");
 
-    char* inLine[charLimit]; // 128 is max character limit arbitrarily defined
+        return NULL;
+    }
+
+    int charLimit = 128; // 128 is max character limit arbitrarily defined
+
+    char inLine[charLimit]; 
+    char temp[charLimit];
 
     // making head pointer for object linked list
     object* head = (object*) malloc(sizeof(object));
+    object* currPtr;
+    head->nextObject = currPtr;
 
     fgets(inLine, charLimit, fileHandle);
 
-    //Line format: camera, width: [num], hieght: [num]
-    fscanf(fileHandle, "%s %s %d %c %s %d");
-
     // grab and assign the camera data
+    // Line format: camera, width: [num], hieght: [num]
+    sscanf(inLine, "camera, width: %f, height: %f", camera->width, camera->height);
 
     // grab objects until we are at the end of file
+    while(fileHandle != EOF){
+        fgets(inLine, charLimit, fileHandle);
+        // fill currPtr with space
+        currPtr = (object*) malloc(sizeof(object));
+        // format is object_type, key: value, key: value, key: value
+        // grab object type
+        sscanf(inLine, "%s", temp);
+        // if sphere parse for sphere
+        if(strcmp(temp, "sphere") == 0){
+            currPtr->objectId = Sphere;
+            sscanf(inLine, "sphere, color: [%f, %f, %f], position: [%f, %f, %f], radius: %d"
+                    , currPtr->color.x, currPtr->color.y, currPtr->color.z, 
+                    currPtr->position.x, currPtr->position.y, currPtr->position.z
+                    , currPtr->radius);
+        // otherwise is plane
+        }else{
+            currPtr->objectId = Plane;
+            sscanf(inLine, "plane, color: [%f, %f, %f], position: [%f, %f, %f], normal: [%f, %f, %f]"
+                    , currPtr->color.x, currPtr->color.y, currPtr->color.z, 
+                    currPtr->position.x, currPtr->position.y, currPtr->position.z
+                    , currPtr->normal.x, currPtr->normal.y, currPtr->normal.z);
+        }
+        // move currptr to next ptr
+        currPtr = currPtr->nextObject;
+        
+    }
     // return head pointer to object list
+    return head;
 }
 
 // Function: raycastToPixMap

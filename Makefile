@@ -1,6 +1,6 @@
 CC       = gcc
 DEBUG    = -g
-CFLAGS   = -Wall -std=c99 -pedantic $(DEBUG)
+CFLAGS   = -Wall -std=c99 -pedantic -lm $(DEBUG)
 
 # Grabs all .c files
 CFILES   = $(wildcard *.c)
