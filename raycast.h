@@ -15,8 +15,8 @@ typedef struct vector3dType{
 
 //typedef enum objectName{Sphere, Plane};
 
-typedef struct objectType{ 
-    // objectName objectId;
+struct objectType{ 
+    objectName objectId = Sphere;
     vector3dType color;
     vector3dType position;
     vector3dType normal;
