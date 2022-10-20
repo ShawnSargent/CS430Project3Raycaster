@@ -146,26 +146,16 @@ void v3_reflect(float *dst, float *v, float *n)
 // Function Purpose: Calculate the vectors magnitude
 float v3_length(float *a)
 {
-	float index0Power = 0.0;
-
-	float index1Power = 0.0;
-
-	float index2Power = 0.0;
-
-	index0Power = a[0] * a[0];
-
-	index1Power = a[1] * a[1];
-
-	index2Power = a[2] * a[2];
-
-    return fabs(sqrt( index0Power + index1Power + index2Power ));
+	return (sqrt(pow(a[0], 2) + pow(a[1], 2) + pow(a[2], 2)));
 }
 
 // Function Name: v3_normalize
 // Function Purpose: Find surface normals
 void v3_normalize(float *dst, float *a)
 {
-
-// Unable to complete
+	for( int index = 0; index < 3; index++ )
+	{
+		dst[index] = a[index] / v3_length( a );
+	}
 
 }

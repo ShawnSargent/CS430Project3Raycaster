@@ -11,7 +11,7 @@ int main( int argc, char **argv )
 
 // Function: parseInputJSON()
 // Purpose: imports .json file, which is file 
-ObjectListType parseInputJSON( FILE *inputFile )
+objectList parseInputJSON( FILE *inputFile )
 {
 
 }
