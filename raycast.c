@@ -54,8 +54,11 @@ int main( int argc, char **argv )
         // camera is going to be at 0,0,0
 
         camera theCamera;
+
         theCamera.postion.x = 0;
+
         theCamera.postion.y = 0;
+
         theCamera.postion.z = 0;
 
         // object linked list
@@ -68,22 +71,20 @@ int main( int argc, char **argv )
 	strcpy( outFileName, argv[4] );
 
 	// CHECK to see if the input file open was a success
-
     headPtr = parseJsonFile( inFileName, &theCamera);
 
-    if(headPtr == NULL){
+    if(headPtr == NULL)
+    {
         fprintf(stderr, "Empty Scene, no objects found\n");
+
         fprintf(stderr, "Ending Program");
+
         return -1;
     }
 
     object* currPtr = headPtr;
-    while(currPtr != NULL){
-        printf("Position z of object: %f\n",currPtr->position.z);
-        currPtr = currPtr->nextObject;
-    }
 
-    //raycastToPixmap();
+    // uint8_t *pixMap = raycastToPixmap(headPtr, *theCamera, &pixmap, imageWidth, imageHeight, channels);
 
     writeP6Data(inFileName, pixMap, imageWidth, imageHeight, channels );
 
@@ -93,6 +94,7 @@ int main( int argc, char **argv )
 
     // free anything necessary
     freeObjectList(headPtr);
+
 	return 0;
 
 }
@@ -107,7 +109,8 @@ object* parseJsonFile( char* inFileName, camera* camera)
 
     fileHandle = fopen(inFileName, "r");
     
-    if(fileHandle == NULL){
+    if( fileHandle == NULL )
+    {
         fclose(fileHandle);
 
         fprintf(stderr, "ERROR: File could not be opened\n");
@@ -117,71 +120,99 @@ object* parseJsonFile( char* inFileName, camera* camera)
 
     int charLimit = 128; // 128 is max character limit arbitrarily defined 
 
-    char inLine[charLimit]; 
-    char temp[charLimit];
-    float width, height;
-    float temp1;
-    float temp2;
-    float temp3;
-    float temp4;
-    float temp5;
-    float temp6;
-    float temp7;
-    float temp8;
-    float temp9;
-    int tempInt;
+    char inLine[charLimit];
 
+    char temp[charLimit];
+
+    float width, height;
+
+    float temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, tempInt;
 
     // making head pointers for object linked list and 
     object* head = NULL;
+
     object* currPtr;
+
     object* newNode;
+
     currPtr = head;
 
     fgets(inLine, charLimit, fileHandle);
 
     // camera, width: %f, height: %f;
     sscanf(inLine, "camera, width: %f, height: %f", &width, &height );
+
     camera->height = height;
+
     camera->width = width;
 
     // <object>, color: [1, 0, 0], position: [0, 1, -5], radius: 2
-    while(fgets(inLine, charLimit, fileHandle) != NULL){
+    while(fgets(inLine, charLimit, fileHandle) != NULL)
+    {
+
         newNode = (object*) malloc(sizeof(object));
+
         // grab the object name to determine how to parse
         sscanf(inLine, "%s", temp);
-        if(strcmp(temp, "sphere,") == 0){
+
+        if(strcmp(temp, "sphere,") == 0)
+        {
             newNode->objectId = Sphere;
+
             sscanf(inLine, "sphere, color: [%f, %f, %f], position: [%f, %f, %f], radius: %d",
             &temp1, &temp2, &temp3, &temp4, &temp5, &temp6, &tempInt);
+
             newNode->color.x = temp1;
+
             newNode->color.y = temp2;
+
             newNode->color.z = temp3;
+
             newNode->position.x = temp4;
+
             newNode->position.y = temp5;
+
             newNode->position.z = temp6;
+
             newNode->radius = tempInt;
         }
-        else if(strcmp(temp, "plane,") == 0){
+
+        else if(strcmp(temp, "plane,") == 0)
+        {
             newNode->objectId = Plane;
+
             sscanf(inLine, "plane, color: [%f, %f, %f], position: [%f, %f, %f], normal: [%f, %f, %f]",
             &temp1, &temp2, &temp3, &temp4, &temp5, &temp6, &temp7, &temp8, &temp9);
+
             newNode->color.x = temp1;
+
             newNode->color.y = temp2;
+
             newNode->color.z = temp3;
+
             newNode->position.x = temp4;
+
             newNode->position.y = temp5;
+
             newNode->position.z = temp6;
+
             newNode->normal.x = temp7;
+
             newNode->normal.y = temp8;
+
             newNode->normal.z = temp9;
         }
+
         newNode->nextObject = NULL;
-        if( head == NULL){
+
+        if( head == NULL )
+        {
             head = newNode;
+
             currPtr = head;
         }
-        else{
+        else
+        {
             currPtr->nextObject = newNode;
 
             currPtr = currPtr->nextObject;
@@ -194,79 +225,79 @@ object* parseJsonFile( char* inFileName, camera* camera)
 
 // Function: raycastToPixMap
 // Purpose: Take the inverted objects and put them on a pix map
-uint8_t* raycastToPixmap( object *headPtr, camera *theCamera,int width, int height, int channels )
+uint8_t* raycastToPixmap( object *headPtr, camera *theCamera, uint8_t *pixmap, int imageWidth, int imageHeight, int imageChannels )
 {
     // Define functions and variables 
 
-		// Define a variable that represents R0 or the Origin of the ray
-		// Of form: [ 0,0,0 ]
-		// A ray is defined by: R(t) = R0 + t * Rd , t > 0 with R0 = [X0, Y0, Z0] and Rd = [Xd, Yd, Zd]
+		uint8_t *tempMap = malloc( sizeof(uint8_t) * imageWidth * imageHeight * imageChannels );
+
+        float cameraHeight = theCamera->height;
+
+        float cameraWidth = theCamera->width;
+
+        float pixHeight = cameraHeight/ imageHeight ;
+
+        float pixWidth = cameraWidth/ imageHeight;
 
 		// Define a variable that represents Rd or the Direction of the ray
 		// Of form: [ deltaX, deltaY, deltaZ ]
-       float deltaX = 0.00;
-
-       float deltaY = 0.00;
-
-       float deltaZ = -1.00;
-       
         float rdVector[3];
 
-		// Define a variable that represents the camera plane 
-
-		// Define a temporary pixmap to be transfered to the actual pixmap at 
-		// the end of the function
-		uint8_t *tempMap = malloc( sizeof(uint8_t) * width * height * channels );
-
-        object *tempObject = NULL;
-
-		// Define a temporary distance variable that represents the distance between
-		// the origin of the ray and the "hit"
-
-		
-	/*
-	
-		For the raytracing to occur logically, we must first start by accessing the
-		positions of each object in the object list
-
-		- This can come in the form of a loop
-	
-	*/
-
-	// LOOP
-    while( headPtr != NULL )
-    {
-		// Access Object
-		tempObject = headPtr;
+        float *unitVector[3];
         
-		// CHECK to see what kind of object it is (see if its a sphere)
-        if( tempObject->objectId = Sphere )
+        float xCoordofCol;
+
+        float yCoordOfRow;
+
+        float zCoord;
+
+        int currentPixMapEntry;
+
+        for ( int outterIndex = 0; outterIndex < imageHeight; outterIndex++ )
         {
-            
-			// If it is a sphere, perform sphere intersection operations
+            yCoordOfRow = theCamera->postion.y - cameraHeight / 2 + pixHeight * ( outterIndex * .5 );
 
-			// Assign properties to pixel
+            rdVector[1] = yCoordOfRow;
 
-            // Assign value in pixMap
+            for ( int innerIndex = 0; innerIndex = imageWidth; innerIndex++ )
+            {
+                xCoordofCol = theCamera->postion.x - cameraWidth / 2 + pixWidth * ( innerIndex * .5 );
 
+                zCoord = -1.00;
+
+                rdVector[0] = xCoordofCol;
+
+                rdVector[2] = -1;
+
+                v3_normalize(unitVector, rdVector);
+
+                // localColor = shootRay( unitVector );
+
+                // currentPixMapEntry = itoa( localColor );
+
+                // Print to pixel buffer
+
+            }   
         }
-        // OTHERWISE, assume that the object is a plane
-        else
-        {
 
-        }
+        *pixmap = tempMap;
 
-        headPtr = headPtr->nextObject;
-    }
-
-    return NULL;
-
+        free( tempMap );
+    
+    return *pixmap;
 }
 
-object* freeObjectList(object* headPtr){
-    if(headPtr->nextObject != NULL){
+
+// Function: free ObjectList
+// Purpose: free the allocated memory in the 
+object* freeObjectList(object* headPtr)
+{
+    if(headPtr->nextObject != NULL)
+    {
         freeObjectList(headPtr->nextObject);
     }
+
     free(headPtr);
+
     return NULL;
 }
