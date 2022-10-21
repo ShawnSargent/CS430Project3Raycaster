@@ -79,7 +79,7 @@ int main( int argc, char **argv )
 
     raycastToPixmap();
 
-    //writeP6Data(inFileName, ... );
+    writeP6Data(inFileName, pixMap, width, height, channels );
 
     printf( "Raycast Operation Successful !\n" );
 
@@ -180,5 +180,47 @@ object* parseJsonFile( char* inFileName, camera* camera)
 // Purpose: Take the inverted objects and put them on a pix map
 uint8_t raycastToPixmap()
 {
-    // this will return a pixmap
+    // Define functions and variables 
+
+		// Define a variable that represents R0 or the Origin of the ray
+		// Of form: [ 0,0,0 ]
+		// A ray is defined by: R(t) = R0 + t * Rd , t > 0 with R0 = [X0, Y0, Z0] and Rd = [Xd, Yd, Zd]
+
+		// Define a variable that represents Rd or the Direction of the ray
+		// Of form: [ deltaX, deltaY, deltaZ ]
+
+		// Define a variable that represents the camera plane 
+
+		// Define a temporary pixmap to be transfered to the actual pixmap at 
+		// the end of the function 
+
+		// Define a temporary distance variable that represents the distance between
+		// the origin of the ray and the "hit"
+
+		// Define a temporary object that represents the object at the current index 
+		
+	/*
+	
+		For the raytracing to occur logically, we must first start by accessing the
+		positions of each object in the object list
+
+		- This can come in the form of a loop
+	
+	*/
+
+	// LOOP
+
+		// Access Object
+		// currentObject = ...
+
+		// CHECK to see what kind of object it is (see if its a sphere)
+
+			// If it is a sphere, perform sphere intersection operation
+
+			// Assign properties to pixel
+
+
+
+	
+
 }
