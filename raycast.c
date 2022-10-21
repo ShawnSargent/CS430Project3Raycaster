@@ -44,7 +44,7 @@ int main( int argc, char **argv )
 
 		// Define a variable to store the color channels of the input image 
 		// (RGBA) has 4 channels
-		int channels = 4;
+		int channels = 3;
 
 	// Define Variables pertaining to objects and cameras
 
@@ -78,7 +78,7 @@ int main( int argc, char **argv )
         return -1;
     }
 
-    raycastToPixmap( &headPtr, &theCamera, imageWidth, );
+    raycastToPixmap( &headPtr, &theCamera, imageWidth, imageHeight, channels );
 
     writeP6Data(inFileName, pixMap, imageWidth, imageHeight, channels );
 
@@ -184,7 +184,7 @@ object* parseJsonFile( char* inFileName, camera* camera)
 
 // Function: raycastToPixMap
 // Purpose: Take the inverted objects and put them on a pix map
-uint8_t* raycastToPixmap( object *headPtr, camera *theCamera, int height, int width, int channels )
+uint8_t* raycastToPixmap( object *headPtr, camera *theCamera,int width, int height, int channels )
 {
     // Define functions and variables 
 
@@ -192,6 +192,13 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera, int height, int wi
 
 		// Define a variable that represents Rd or the Direction of the ray
 		// Of form: [ deltaX, deltaY, deltaZ ]
+       float deltaX = 0.00;
+
+       float deltaY = 0.00;
+
+       float deltaZ = -1.00;
+       
+        float rdVector[3];
 
 		// Define a variable that represents the camera plane
 		float height = theCamera->height;
@@ -202,9 +209,9 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera, int height, int wi
 		// the end of the function
 		uint8_t *tempMap = malloc( sizeof(uint8_t) * width * height * channels );
 
-
 		// Define a temporary distance variable that represents the distance between
 		// the origin of the ray and the "hit"
+
 		
 	/*
 	
@@ -212,8 +219,6 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera, int height, int wi
 		positions of each object in the object list
 
 		- This can come in the form of a loop
-
-		// A ray is defined by: R(t) = R0 + t * Rd , t > 0 with R0 = [X0, Y0, Z0] and Rd = [Xd, Yd, Zd]
 	
 	*/
 
@@ -224,8 +229,11 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera, int height, int wi
 
 		// CHECK to see what kind of object it is (see if its a sphere)
 
-			// If it is a sphere, perform sphere intersection operation
+			// If it is a sphere, perform sphere intersection operations
 
 			// Assign properties to pixel
+
+
+    return NULL;
 
 }
