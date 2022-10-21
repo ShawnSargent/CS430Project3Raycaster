@@ -34,12 +34,12 @@ int main( int argc, char **argv )
 	// Define Variables pertaining to height and width, channels, and pixmap
 	
 		// Variable representing width at the 1st index inputted from the CLI
-		int imageWidth;
-        sscanf(argv[1], "%d", &imageWidth);
+		int width;
+        sscanf(argv[1], "%d", &width);
 
 		// Variable representing height at the 2nd index inputted from the CLI
-		int imageHeight;
-        sscanf(argv[2], "%d", &imageHeight);
+		int height;
+        sscanf(argv[2], "%d", &height);
 
 		// Define a variable to store the color channels of the input image 
 		// (RGBA) has 4 channels
@@ -112,57 +112,47 @@ object* parseJsonFile( char* inFileName, camera* camera)
 
     char inLine[charLimit]; 
     char temp[charLimit];
-    float width, height;
-    float temp1;
-    float temp2;
-    float temp3;
-    float temp4;
-    float temp5;
-    float temp6;
-    float temp7;
-    float temp8;
-    float temp9;
-    int tempInt;
-
 
     // making head pointer for object linked list
-    object* head;
+    object* head = (object*) malloc(sizeof(object));
     object* currPtr;
-    currPtr = head;
+    head->nextObject = currPtr;
 
     fgets(inLine, charLimit, fileHandle);
 
-    // camera, width: %f, height: %f;
-    sscanf(inLine, "camera, width: %f, height: %f", &width, &height );
-    camera->height = height;
-    camera->width = width;
+    // grab and assign the camera data
+    // Line format: camera, width: [num], hieght: [num]
+    sscanf(inLine, "camera, width: %f, height: %f", camera->width, camera->height);
 
-    // <object>, color: [1, 0, 0], position: [0, 1, -5], radius: 2
-    while(fgets(inLine, charLimit, fileHandle) != NULL){
-        currPtr = (object*)malloc(sizeof(object));
-        // grab the object name to determine how to parse
+    // grab objects until we are at the end of file
+    while(fileHandle != EOF){
+        fgets(inLine, charLimit, fileHandle);
+        // fill currPtr with space
+        currPtr = (object*) malloc(sizeof(object));
+        // format is object_type, key: value, key: value, key: value
+        // grab object type
         sscanf(inLine, "%s", temp);
-        if(strcmp(temp, "sphere,")){
+        // if sphere parse for sphere
+        if(strcmp(temp, "sphere") == 0){
             currPtr->objectId = Sphere;
-            sscanf(inLine, "sphere, color: [%f, %f, %f], position: [%f, %f, %f], radius: %n",
-            &temp1, &temp2, &temp3, &temp4, &temp5, &temp6, &tempInt);
-            currPtr->color.x = temp1;
-            currPtr->color.y = temp2;
-            currPtr->color.z = temp3;
-            currPtr->position.x = temp4;
-            currPtr->position.y = temp5;
-            currPtr->position.z = temp6;
-            currPtr->radius = tempInt;
+            sscanf(inLine, "sphere, color: [%f, %f, %f], position: [%f, %f, %f], radius: %d"
+                    , currPtr->color.x, currPtr->color.y, currPtr->color.z, 
+                    currPtr->position.x, currPtr->position.y, currPtr->position.z
+                    , currPtr->radius);
+        // otherwise is plane
+        }else{
+            currPtr->objectId = Plane;
+            sscanf(inLine, "plane, color: [%f, %f, %f], position: [%f, %f, %f], normal: [%f, %f, %f]"
+                    , currPtr->color.x, currPtr->color.y, currPtr->color.z, 
+                    currPtr->position.x, currPtr->position.y, currPtr->position.z
+                    , currPtr->normal.x, currPtr->normal.y, currPtr->normal.z);
         }
-        else if(strcmp(temp, "plane,")){
-
-        }
-
+        // move currptr to next ptr
         currPtr = currPtr->nextObject;
+        
     }
-    
     // return head pointer to object list
-    return NULL;
+    return head;
 }
 
 // Function: raycastToPixMap
