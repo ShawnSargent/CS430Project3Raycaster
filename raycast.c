@@ -218,6 +218,8 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera,int width, int heig
 		// the end of the function
 		uint8_t *tempMap = malloc( sizeof(uint8_t) * width * height * channels );
 
+        object *tempObject = NULL;
+
 		// Define a temporary distance variable that represents the distance between
 		// the origin of the ray and the "hit"
 
@@ -232,17 +234,30 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera,int width, int heig
 	*/
 
 	// LOOP
-    //while()
-
+    while( headPtr != NULL )
+    {
 		// Access Object
-		// currentObject = ...
-
+		tempObject = headPtr;
+        
 		// CHECK to see what kind of object it is (see if its a sphere)
-
+        if( tempObject->objectId = Sphere )
+        {
+            
 			// If it is a sphere, perform sphere intersection operations
 
 			// Assign properties to pixel
 
+            // Assign value in pixMap
+
+        }
+        // OTHERWISE, assume that the object is a plane
+        else
+        {
+
+        }
+
+        headPtr = headPtr->nextObject;
+    }
 
     return NULL;
 

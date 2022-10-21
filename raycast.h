@@ -59,7 +59,6 @@ object* parseJsonFile(char* inFileName, camera* camera);
 
 uint8_t* raycastToPixmap( object *headPtr, camera *theCamera,int width, int height, int channels );
 
-
 object* freeObjectList(object* headPtr);
 
 #endif // RAYCAST_H
