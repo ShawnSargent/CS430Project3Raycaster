@@ -77,6 +77,12 @@ int main( int argc, char **argv )
         return -1;
     }
 
+    object* currPtr = headPtr;
+    while(currPtr != NULL){
+        printf("Position z of object: %f\n",currPtr->position.z);
+        currPtr = currPtr->nextObject;
+    }
+
     raycastToPixmap();
 
     writeP6Data(inFileName, pixMap, imageWidth, imageHeight, channels );
