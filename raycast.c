@@ -83,7 +83,7 @@ int main( int argc, char **argv )
         currPtr = currPtr->nextObject;
     }
 
-    raycastToPixmap();
+    //raycastToPixmap();
 
     writeP6Data(inFileName, pixMap, imageWidth, imageHeight, channels );
 
@@ -92,6 +92,7 @@ int main( int argc, char **argv )
     printf( "Object transferred to pixel buffer successfully. !\n" );
 
     // free anything necessary
+    freeObjectList(headPtr);
 	return 0;
 
 }
@@ -231,7 +232,7 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera,int width, int heig
 	*/
 
 	// LOOP
-    while()
+    //while()
 
 		// Access Object
 		// currentObject = ...
@@ -245,4 +246,12 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera,int width, int heig
 
     return NULL;
 
+}
+
+object* freeObjectList(object* headPtr){
+    if(headPtr->nextObject != NULL){
+        freeObjectList(headPtr->nextObject);
+    }
+    free(headPtr);
+    return NULL;
 }
