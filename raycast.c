@@ -39,7 +39,6 @@ int main( int argc, char **argv )
 
 		// Variable representing height at the 2nd index inputted from the CLI
 		int imageHeight;
-
         sscanf(argv[2], "%d", &imageHeight);
 
 		// Define a variable to store the color channels of the input image 
@@ -78,7 +77,13 @@ int main( int argc, char **argv )
         return -1;
     }
 
-    raycastToPixmap( &headPtr, &theCamera, imageWidth, imageHeight, channels );
+    object* currPtr = headPtr;
+    while(currPtr != NULL){
+        printf("Position z of object: %f\n",currPtr->position.z);
+        currPtr = currPtr->nextObject;
+    }
+
+    raycastToPixmap();
 
     writeP6Data(inFileName, pixMap, imageWidth, imageHeight, channels );
 
@@ -113,71 +118,75 @@ object* parseJsonFile( char* inFileName, camera* camera)
 
     char inLine[charLimit]; 
     char temp[charLimit];
+    float width, height;
+    float temp1;
+    float temp2;
+    float temp3;
+    float temp4;
+    float temp5;
+    float temp6;
+    float temp7;
+    float temp8;
+    float temp9;
+    int tempInt;
+
 
     // making head pointer for object linked list
-    object* head = (object*) malloc(sizeof(object));
+    object* head = NULL;
     object* currPtr;
-    head->nextObject = currPtr;
+    object* newNode;
+    currPtr = head;
 
     fgets(inLine, charLimit, fileHandle);
 
-    // grab and assign the camera data
-    // Line format: camera, width: [num], hieght: [num]
-    sscanf(inLine, "camera, width: %f, height: %f", camera->width, camera->height);
+    // camera, width: %f, height: %f;
+    sscanf(inLine, "camera, width: %f, height: %f", &width, &height );
+    camera->height = height;
+    camera->width = width;
 
-    // grab objects until we are at the end of file
-    while(fileHandle != EOF){
-        fgets(inLine, charLimit, fileHandle);
-        // fill currPtr with space
-        currPtr = (object*) malloc(sizeof(object));
-        // format is object_type, key: value, key: value, key: value
-        // grab object type
+    // <object>, color: [1, 0, 0], position: [0, 1, -5], radius: 2
+    while(fgets(inLine, charLimit, fileHandle) != NULL){
+        newNode = (object*) malloc(sizeof(object));
+        // grab the object name to determine how to parse
         sscanf(inLine, "%s", temp);
-        // if sphere parse for sphere
-        if(strcmp(temp, "sphere") == 0){
-            currPtr->objectId = Sphere;
-            sscanf(inLine, "sphere, color: [%f, %f, %f], position: [%f, %f, %f], radius: %d"
-                    , currPtr->color.x, currPtr->color.y, currPtr->color.z, 
-                    currPtr->position.x, currPtr->position.y, currPtr->position.z
-                    , currPtr->radius);
-        // otherwise is plane
-        }else{
-            currPtr->objectId = Plane;
-            sscanf(inLine, "plane, color: [%f, %f, %f], position: [%f, %f, %f], normal: [%f, %f, %f]"
-                    , currPtr->color.x, currPtr->color.y, currPtr->color.z, 
-                    currPtr->position.x, currPtr->position.y, currPtr->position.z
-                    , currPtr->normal.x, currPtr->normal.y, currPtr->normal.z);
+        if(strcmp(temp, "sphere,") == 0){
+            newNode->objectId = Sphere;
+            sscanf(inLine, "sphere, color: [%f, %f, %f], position: [%f, %f, %f], radius: %d",
+            &temp1, &temp2, &temp3, &temp4, &temp5, &temp6, &tempInt);
+            newNode->color.x = temp1;
+            newNode->color.y = temp2;
+            newNode->color.z = temp3;
+            newNode->position.x = temp4;
+            newNode->position.y = temp5;
+            newNode->position.z = temp6;
+            newNode->radius = tempInt;
         }
-        else if(strcmp(temp, "plane,")){
-            currPtr->objectId = Plane;
-            sscanf(inLine, "plane, color: [%f, %f, %f], position: [%f, %f, %f], : normal: [%f, %f, %f]",
+        else if(strcmp(temp, "plane,") == 0){
+            newNode->objectId = Plane;
+            sscanf(inLine, "plane, color: [%f, %f, %f], position: [%f, %f, %f], normal: [%f, %f, %f]",
             &temp1, &temp2, &temp3, &temp4, &temp5, &temp6, &temp7, &temp8, &temp9);
-            currPtr->color.x = temp1;
-            currPtr->color.y = temp2;
-            currPtr->color.z = temp3;
-            currPtr->position.x = temp4;
-            currPtr->position.y = temp5;
-            currPtr->position.z = temp6;
-            currPtr->radius = tempInt;
+            newNode->color.x = temp1;
+            newNode->color.y = temp2;
+            newNode->color.z = temp3;
+            newNode->position.x = temp4;
+            newNode->position.y = temp5;
+            newNode->position.z = temp6;
+            newNode->normal.x = temp7;
+            newNode->normal.y = temp8;
+            newNode->normal.z = temp9;
         }
-        else if(strcmp(temp, "plane,")){
-            currPtr->objectId = Plane;
-            sscanf(inLine, "plane, color: [%f, %f, %f], position: [%f, %f, %f], : normal: [%f, %f, %f]",
-            &temp1, &temp2, &temp3, &temp4, &temp5, &temp6, &temp7, &temp8, &temp9);
-            currPtr->color.x = temp1;
-            currPtr->color.y = temp2;
-            currPtr->color.z = temp3;
-            currPtr->position.x = temp4;
-            currPtr->position.y = temp5;
-            currPtr->position.z = temp6;
-            currPtr->normal.x = temp7;
-            currPtr->normal.y = temp8;
-            currPtr->normal.z = temp9;
+        newNode->nextObject = NULL;
+        if( head == NULL){
+            head = newNode;
+            currPtr = head;
         }
+        else{
+            currPtr->nextObject = newNode;
 
-        currPtr = currPtr->nextObject;
-        
+            currPtr = currPtr->nextObject;
+        }
     }
+    
     // return head pointer to object list
     return head;
 }
@@ -189,6 +198,8 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera,int width, int heig
     // Define functions and variables 
 
 		// Define a variable that represents R0 or the Origin of the ray
+		// Of form: [ 0,0,0 ]
+		// A ray is defined by: R(t) = R0 + t * Rd , t > 0 with R0 = [X0, Y0, Z0] and Rd = [Xd, Yd, Zd]
 
 		// Define a variable that represents Rd or the Direction of the ray
 		// Of form: [ deltaX, deltaY, deltaZ ]
@@ -200,10 +211,7 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera,int width, int heig
        
         float rdVector[3];
 
-		// Define a variable that represents the camera plane
-		float height = theCamera->height;
-
-		float width = theCamera->width;
+		// Define a variable that represents the camera plane 
 
 		// Define a temporary pixmap to be transfered to the actual pixmap at 
 		// the end of the function
@@ -223,6 +231,7 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera,int width, int heig
 	*/
 
 	// LOOP
+    while()
 
 		// Access Object
 		// currentObject = ...

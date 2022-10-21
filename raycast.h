@@ -38,7 +38,7 @@ typedef struct objectType
 
     int radius;
 
-    struct object* nextObject;
+    struct objectType* nextObject;
 
 }object;
 

@@ -1,5 +1,7 @@
 # ignore object files
 *.o
+# ignore executables
+*.exe
 
 # ignore json and ppm files
 *.json
