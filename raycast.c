@@ -126,8 +126,9 @@ object* parseJsonFile( char* inFileName, camera* camera)
 
 
     // making head pointer for object linked list
-    object* head;
+    object* head = NULL;
     object* currPtr;
+    object* newNode;
     currPtr = head;
 
     fgets(inLine, charLimit, fileHandle);
@@ -139,37 +140,44 @@ object* parseJsonFile( char* inFileName, camera* camera)
 
     // <object>, color: [1, 0, 0], position: [0, 1, -5], radius: 2
     while(fgets(inLine, charLimit, fileHandle) != NULL){
-        currPtr = (object*)malloc(sizeof(object));
+        newNode = (object*) malloc(sizeof(object));
         // grab the object name to determine how to parse
         sscanf(inLine, "%s", temp);
-        if(strcmp(temp, "sphere,")){
-            currPtr->objectId = Sphere;
-            sscanf(inLine, "sphere, color: [%f, %f, %f], position: [%f, %f, %f], radius: %n",
+        if(strcmp(temp, "sphere,") == 0){
+            newNode->objectId = Sphere;
+            sscanf(inLine, "sphere, color: [%f, %f, %f], position: [%f, %f, %f], radius: %d",
             &temp1, &temp2, &temp3, &temp4, &temp5, &temp6, &tempInt);
-            currPtr->color.x = temp1;
-            currPtr->color.y = temp2;
-            currPtr->color.z = temp3;
-            currPtr->position.x = temp4;
-            currPtr->position.y = temp5;
-            currPtr->position.z = temp6;
-            currPtr->radius = tempInt;
+            newNode->color.x = temp1;
+            newNode->color.y = temp2;
+            newNode->color.z = temp3;
+            newNode->position.x = temp4;
+            newNode->position.y = temp5;
+            newNode->position.z = temp6;
+            newNode->radius = tempInt;
         }
-        else if(strcmp(temp, "plane,")){
-            currPtr->objectId = Plane;
-            sscanf(inLine, "plane, color: [%f, %f, %f], position: [%f, %f, %f], : normal: [%f, %f, %f]",
+        else if(strcmp(temp, "plane,") == 0){
+            newNode->objectId = Plane;
+            sscanf(inLine, "plane, color: [%f, %f, %f], position: [%f, %f, %f], normal: [%f, %f, %f]",
             &temp1, &temp2, &temp3, &temp4, &temp5, &temp6, &temp7, &temp8, &temp9);
-            currPtr->color.x = temp1;
-            currPtr->color.y = temp2;
-            currPtr->color.z = temp3;
-            currPtr->position.x = temp4;
-            currPtr->position.y = temp5;
-            currPtr->position.z = temp6;
-            currPtr->normal.x = temp7;
-            currPtr->normal.y = temp8;
-            currPtr->normal.z = temp9;
+            newNode->color.x = temp1;
+            newNode->color.y = temp2;
+            newNode->color.z = temp3;
+            newNode->position.x = temp4;
+            newNode->position.y = temp5;
+            newNode->position.z = temp6;
+            newNode->normal.x = temp7;
+            newNode->normal.y = temp8;
+            newNode->normal.z = temp9;
         }
-
-        currPtr = currPtr->nextObject;
+        newNode->nextObject = NULL;
+        if( head == NULL){
+            head = newNode;
+            currPtr = head;
+        }
+        else{
+            currPtr->nextObject = newNode;
+            currPtr = currPtr->nextObject;
+        }
     }
     
     // return head pointer to object list
