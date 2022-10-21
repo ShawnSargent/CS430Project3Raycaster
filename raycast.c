@@ -34,13 +34,13 @@ int main( int argc, char **argv )
 	// Define Variables pertaining to height and width, channels, and pixmap
 	
 		// Variable representing width at the 1st index inputted from the CLI
-		int width;
-        sscanf(argv[1], "%d", &width);
+		int imageWidth;
+        sscanf(argv[1], "%d", &imageWidth);
 
 		// Variable representing height at the 2nd index inputted from the CLI
-		int height;
+		int imageHeight;
 
-        sscanf(argv[2], "%d", &height);
+        sscanf(argv[2], "%d", &imageHeight);
 
 		// Define a variable to store the color channels of the input image 
 		// (RGBA) has 4 channels
@@ -78,9 +78,9 @@ int main( int argc, char **argv )
         return -1;
     }
 
-    raycastToPixmap( &headPtr, &theCamera, );
+    raycastToPixmap( &headPtr, &theCamera, imageWidth, );
 
-    writeP6Data(inFileName, pixMap, width, height, channels );
+    writeP6Data(inFileName, pixMap, imageWidth, imageHeight, channels );
 
     printf( "Raycast Operation Successful !\n" );
 
@@ -148,7 +148,33 @@ object* parseJsonFile( char* inFileName, camera* camera)
                     currPtr->position.x, currPtr->position.y, currPtr->position.z
                     , currPtr->normal.x, currPtr->normal.y, currPtr->normal.z);
         }
-        // move currptr to next ptr
+        else if(strcmp(temp, "plane,")){
+            currPtr->objectId = Plane;
+            sscanf(inLine, "plane, color: [%f, %f, %f], position: [%f, %f, %f], : normal: [%f, %f, %f]",
+            &temp1, &temp2, &temp3, &temp4, &temp5, &temp6, &temp7, &temp8, &temp9);
+            currPtr->color.x = temp1;
+            currPtr->color.y = temp2;
+            currPtr->color.z = temp3;
+            currPtr->position.x = temp4;
+            currPtr->position.y = temp5;
+            currPtr->position.z = temp6;
+            currPtr->radius = tempInt;
+        }
+        else if(strcmp(temp, "plane,")){
+            currPtr->objectId = Plane;
+            sscanf(inLine, "plane, color: [%f, %f, %f], position: [%f, %f, %f], : normal: [%f, %f, %f]",
+            &temp1, &temp2, &temp3, &temp4, &temp5, &temp6, &temp7, &temp8, &temp9);
+            currPtr->color.x = temp1;
+            currPtr->color.y = temp2;
+            currPtr->color.z = temp3;
+            currPtr->position.x = temp4;
+            currPtr->position.y = temp5;
+            currPtr->position.z = temp6;
+            currPtr->normal.x = temp7;
+            currPtr->normal.y = temp8;
+            currPtr->normal.z = temp9;
+        }
+
         currPtr = currPtr->nextObject;
         
     }
