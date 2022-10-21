@@ -155,14 +155,25 @@ object* parseJsonFile( char* inFileName, camera* camera)
             currPtr->radius = tempInt;
         }
         else if(strcmp(temp, "plane,")){
-
+            currPtr->objectId = Plane;
+            sscanf(inLine, "plane, color: [%f, %f, %f], position: [%f, %f, %f], : normal: [%f, %f, %f]",
+            &temp1, &temp2, &temp3, &temp4, &temp5, &temp6, &temp7, &temp8, &temp9);
+            currPtr->color.x = temp1;
+            currPtr->color.y = temp2;
+            currPtr->color.z = temp3;
+            currPtr->position.x = temp4;
+            currPtr->position.y = temp5;
+            currPtr->position.z = temp6;
+            currPtr->normal.x = temp7;
+            currPtr->normal.y = temp8;
+            currPtr->normal.z = temp9;
         }
 
         currPtr = currPtr->nextObject;
     }
     
     // return head pointer to object list
-    return NULL;
+    return head;
 }
 
 // Function: raycastToPixMap
