@@ -79,7 +79,7 @@ int main( int argc, char **argv )
 
     raycastToPixmap();
 
-    writeP6Data(inFileName, pixMap, width, height, channels );
+    writeP6Data(inFileName, pixMap, imageWidth, imageHeight, channels );
 
     printf( "Raycast Operation Successful !\n" );
 
