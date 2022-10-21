@@ -176,6 +176,7 @@ object* parseJsonFile( char* inFileName, camera* camera)
         }
         else{
             currPtr->nextObject = newNode;
+
             currPtr = currPtr->nextObject;
         }
     }
