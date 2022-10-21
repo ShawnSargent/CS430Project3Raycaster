@@ -39,6 +39,7 @@ int main( int argc, char **argv )
 
 		// Variable representing height at the 2nd index inputted from the CLI
 		int height;
+
         sscanf(argv[2], "%d", &height);
 
 		// Define a variable to store the color channels of the input image 
@@ -77,7 +78,7 @@ int main( int argc, char **argv )
         return -1;
     }
 
-    raycastToPixmap();
+    raycastToPixmap( &headPtr, &theCamera, );
 
     writeP6Data(inFileName, pixMap, width, height, channels );
 
@@ -157,26 +158,27 @@ object* parseJsonFile( char* inFileName, camera* camera)
 
 // Function: raycastToPixMap
 // Purpose: Take the inverted objects and put them on a pix map
-uint8_t raycastToPixmap()
+uint8_t* raycastToPixmap( object *headPtr, camera *theCamera, int height, int width, int channels )
 {
     // Define functions and variables 
 
 		// Define a variable that represents R0 or the Origin of the ray
-		// Of form: [ 0,0,0 ]
-		// A ray is defined by: R(t) = R0 + t * Rd , t > 0 with R0 = [X0, Y0, Z0] and Rd = [Xd, Yd, Zd]
 
 		// Define a variable that represents Rd or the Direction of the ray
 		// Of form: [ deltaX, deltaY, deltaZ ]
 
-		// Define a variable that represents the camera plane 
+		// Define a variable that represents the camera plane
+		float height = theCamera->height;
+
+		float width = theCamera->width;
 
 		// Define a temporary pixmap to be transfered to the actual pixmap at 
-		// the end of the function 
+		// the end of the function
+		uint8_t *tempMap = malloc( sizeof(uint8_t) * width * height * channels );
+
 
 		// Define a temporary distance variable that represents the distance between
 		// the origin of the ray and the "hit"
-
-		// Define a temporary object that represents the object at the current index 
 		
 	/*
 	
@@ -184,6 +186,8 @@ uint8_t raycastToPixmap()
 		positions of each object in the object list
 
 		- This can come in the form of a loop
+
+		// A ray is defined by: R(t) = R0 + t * Rd , t > 0 with R0 = [X0, Y0, Z0] and Rd = [Xd, Yd, Zd]
 	
 	*/
 
@@ -197,9 +201,5 @@ uint8_t raycastToPixmap()
 			// If it is a sphere, perform sphere intersection operation
 
 			// Assign properties to pixel
-
-
-
-	
 
 }
