@@ -57,7 +57,7 @@ typedef struct cameraType
 // Function Prototypes
 object* parseJsonFile(char* inFileName, camera* camera);
 
-uint8_t raycastToPixmap( object *headPtr, camera *theCamera, uint8_t pixmap, int width, int height, int channels );
+uint8_t* raycastToPixmap( object *headPtr, camera theCamera, uint8_t *pixmap, int width, int height, int channels );
 
 object* freeObjectList(object* headPtr);
 

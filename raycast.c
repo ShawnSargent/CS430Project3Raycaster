@@ -86,7 +86,7 @@ int main( int argc, char **argv )
 
     // uint8_t *pixMap = raycastToPixmap(headPtr, *theCamera, &pixmap, imageWidth, imageHeight, channels);
 
-    writeP6Data(inFileName, pixMap, imageWidth, imageHeight, channels );
+    writeP6Data(outFileName, pixMap, imageWidth, imageHeight, channels );
 
     printf( "Raycast Operation Successful !\n" );
 
@@ -126,7 +126,8 @@ object* parseJsonFile( char* inFileName, camera* camera)
 
     float width, height;
 
-    float temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, tempInt;
+    float temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9;
+    int tempInt;
 
     // making head pointers for object linked list and 
     object* head = NULL;
@@ -225,15 +226,15 @@ object* parseJsonFile( char* inFileName, camera* camera)
 
 // Function: raycastToPixMap
 // Purpose: Take the inverted objects and put them on a pix map
-uint8_t* raycastToPixmap( object *headPtr, camera *theCamera, uint8_t *pixmap, int imageWidth, int imageHeight, int imageChannels )
+uint8_t* raycastToPixmap( object *headPtr, camera theCamera, uint8_t *pixmap, int imageWidth, int imageHeight, int imageChannels )
 {
     // Define functions and variables 
 
 		uint8_t *tempMap = malloc( sizeof(uint8_t) * imageWidth * imageHeight * imageChannels );
 
-        float cameraHeight = theCamera->height;
+        float cameraHeight = theCamera.height;
 
-        float cameraWidth = theCamera->width;
+        float cameraWidth = theCamera.width;
 
         float pixHeight = cameraHeight/ imageHeight ;
 
@@ -255,13 +256,13 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera, uint8_t *pixmap, i
 
         for ( int outterIndex = 0; outterIndex < imageHeight; outterIndex++ )
         {
-            yCoordOfRow = theCamera->postion.y - cameraHeight / 2 + pixHeight * ( outterIndex * .5 );
+            yCoordOfRow = theCamera.postion.y - cameraHeight / 2 + pixHeight * ( outterIndex * .5 );
 
             rdVector[1] = yCoordOfRow;
 
-            for ( int innerIndex = 0; innerIndex = imageWidth; innerIndex++ )
+            for ( int innerIndex = 0; innerIndex < imageWidth; innerIndex++ )
             {
-                xCoordofCol = theCamera->postion.x - cameraWidth / 2 + pixWidth * ( innerIndex * .5 );
+                xCoordofCol = theCamera.postion.x - cameraWidth / 2 + pixWidth * ( innerIndex * .5 );
 
                 zCoord = -1.00;
 
@@ -269,7 +270,7 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera, uint8_t *pixmap, i
 
                 rdVector[2] = -1;
 
-                v3_normalize(unitVector, rdVector);
+                v3_normalize(*unitVector, rdVector);
 
                 // localColor = shootRay( unitVector );
 
@@ -280,11 +281,9 @@ uint8_t* raycastToPixmap( object *headPtr, camera *theCamera, uint8_t *pixmap, i
             }   
         }
 
-        *pixmap = tempMap;
-
-        free( tempMap );
+        pixmap = tempMap;
     
-    return *pixmap;
+    return pixmap;
 }
 
 
