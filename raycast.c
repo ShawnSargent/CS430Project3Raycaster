@@ -131,7 +131,7 @@ object* parseJsonFile( char* inFileName, camera* camera)
     int tempInt;
 
 
-    // making head pointer for object linked list
+    // making head pointers for object linked list and 
     object* head = NULL;
     object* currPtr;
     object* newNode;
